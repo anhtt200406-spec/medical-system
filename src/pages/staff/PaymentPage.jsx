@@ -1,18 +1,21 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { DollarSign, User, CreditCard, CheckCircle, AlertCircle } from 'lucide-react';
 import Card, { CardHeader, CardBody } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import Alert from '../../components/ui/Alert';
-import { awaitingPaymentAppointments } from '../../data/mockData';
+import { useApp } from '../../context/AppContext';
 import { formatDate, formatCurrency } from '../../utils/helpers';
 
 export default function PaymentPage() {
-    const navigate = useNavigate();
-    const [paymentQueue, setPaymentQueue] = useState(awaitingPaymentAppointments);
+    const { paymentQueue, completePayment } = useApp();
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [successMsg, setSuccessMsg] = useState('');
+
+    // Tách hàng chờ theo trạng thái
+    const pendingPayments = paymentQueue.filter(apt => apt.paymentStatus === 'pending');
+    const completedPayments = paymentQueue.filter(apt => apt.paymentStatus === 'completed');
 
     const handleSelectPayment = (appointment) => {
         setSelectedAppointment(appointment);
@@ -20,19 +23,14 @@ export default function PaymentPage() {
     };
 
     const handleConfirmPayment = () => {
-        // Update payment status
-        setPaymentQueue(paymentQueue.map(apt =>
-            apt.id === selectedAppointment.id
-                ? { ...apt, paymentStatus: 'completed' }
-                : apt
-        ));
-        alert(`Thanh toán thành công cho bệnh nhân ${selectedAppointment.patientName}!`);
+        if (!selectedAppointment) return;
+        completePayment(selectedAppointment.id);
+        const name = selectedAppointment.patientName;
         setShowPaymentModal(false);
         setSelectedAppointment(null);
+        setSuccessMsg(`✅ Thanh toán thành công cho bệnh nhân ${name}!`);
+        setTimeout(() => setSuccessMsg(''), 4000);
     };
-
-    const pendingPayments = paymentQueue.filter(apt => apt.paymentStatus === 'pending');
-    const completedPayments = paymentQueue.filter(apt => apt.paymentStatus === 'completed');
 
     return (
         <div className="space-y-6">
@@ -50,6 +48,13 @@ export default function PaymentPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Success Alert */}
+            {successMsg && (
+                <Alert type="success">
+                    {successMsg}
+                </Alert>
+            )}
 
             {/* Quick Stats */}
             <div className="grid md:grid-cols-2 gap-4">
@@ -109,12 +114,15 @@ export default function PaymentPage() {
                                         </div>
                                         <div className="flex-1">
                                             <h3 className="font-semibold text-slate-900">{apt.patientName}</h3>
-                                            <p className="text-sm text-slate-600">Mã BHYT: {apt.bhyt}</p>
+                                            <p className="text-sm text-slate-600">Mã BHYT: {apt.bhyt || '—'}</p>
                                             <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
                                                 <span>{apt.specialty}</span>
                                                 <span>•</span>
                                                 <span>{formatDate(apt.date)} - {apt.time}</span>
                                             </div>
+                                            {apt.diagnosis && (
+                                                <p className="text-xs text-slate-500 mt-1">Chẩn đoán: {apt.diagnosis}</p>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="text-right">
@@ -171,7 +179,7 @@ export default function PaymentPage() {
                                         </div>
                                         <div className="flex-1">
                                             <h3 className="font-semibold text-slate-900">{apt.patientName}</h3>
-                                            <p className="text-sm text-slate-600">Mã BHYT: {apt.bhyt}</p>
+                                            <p className="text-sm text-slate-600">Mã BHYT: {apt.bhyt || '—'}</p>
                                             <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
                                                 <span>{apt.specialty}</span>
                                                 <span>•</span>
@@ -216,7 +224,7 @@ export default function PaymentPage() {
                                         {selectedAppointment.patientName}
                                     </h3>
                                     <p className="text-sm text-slate-600">
-                                        Mã BHYT: {selectedAppointment.bhyt}
+                                        Mã BHYT: {selectedAppointment.bhyt || '—'}
                                     </p>
                                 </div>
                             </div>
@@ -237,15 +245,21 @@ export default function PaymentPage() {
                         </div>
 
                         {/* Diagnosis */}
-                        <div>
-                            <h4 className="font-semibold text-slate-900 mb-2">Chẩn đoán</h4>
-                            <p className="text-slate-700">{selectedAppointment.diagnosis}</p>
-                        </div>
+                        {selectedAppointment.diagnosis && (
+                            <div>
+                                <h4 className="font-semibold text-slate-900 mb-2">Chẩn đoán</h4>
+                                <p className="text-slate-700 p-3 bg-slate-50 rounded-lg">
+                                    {selectedAppointment.diagnosis}
+                                </p>
+                            </div>
+                        )}
 
                         {/* Prescription */}
                         {selectedAppointment.prescription && selectedAppointment.prescription.length > 0 && (
                             <div>
-                                <h4 className="font-semibold text-slate-900 mb-2">Đơn thuốc</h4>
+                                <h4 className="font-semibold text-slate-900 mb-2">
+                                    Đơn thuốc ({selectedAppointment.prescription.length} loại)
+                                </h4>
                                 <div className="space-y-2">
                                     {selectedAppointment.prescription.map((item, idx) => (
                                         <div key={idx} className="p-3 bg-slate-50 rounded-lg text-sm">
@@ -309,9 +323,9 @@ export default function PaymentPage() {
                             <Button
                                 variant="success"
                                 onClick={handleConfirmPayment}
-                                className="flex-1"
+                                className="flex-1 flex items-center justify-center gap-2"
                             >
-                                <CheckCircle className="w-4 h-4 mr-2" />
+                                <CheckCircle className="w-4 h-4" />
                                 Xác nhận thanh toán
                             </Button>
                         </div>

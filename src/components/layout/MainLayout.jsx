@@ -24,7 +24,7 @@ export default function MainLayout({ children }) {
 
     const staffMenu = [
         { name: 'Tổng quan', path: '/staff/dashboard', icon: Home },
-        { name: 'Khám bệnh', path: '/staff/examination', icon: Stethoscope },
+        { name: 'Khám bệnh', path: '/staff/dashboard', icon: Stethoscope },
         { name: 'Thanh toán', path: '/staff/payment', icon: DollarSign },
     ];
 

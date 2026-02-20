@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AppProvider } from './context/AppContext';
 import MainLayout from './components/layout/MainLayout';
 import LoginPage from './pages/LoginPage';
 import PatientDashboard from './pages/patient/PatientDashboard';
@@ -11,8 +12,8 @@ import ExaminationPage from './pages/staff/ExaminationPage';
 import PaymentPage from './pages/staff/PaymentPage';
 
 // Protected Route Component
-function ProtectedRoute({ children, requiredRole }) {
-    const { user, loading } = useAuth();
+function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode; requiredRole?: string }) {
+    const { user, loading } = useAuth() as any;
 
     if (loading) {
         return (
@@ -34,8 +35,8 @@ function ProtectedRoute({ children, requiredRole }) {
 }
 
 // Public Route (redirect if already logged in)
-function PublicRoute({ children }) {
-    const { user, loading } = useAuth();
+function PublicRoute({ children }: { children: React.ReactNode }) {
+    const { user, loading } = useAuth() as any;
 
     if (loading) {
         return (
@@ -49,7 +50,7 @@ function PublicRoute({ children }) {
         return <Navigate to={user.role === 'patient' ? '/patient/dashboard' : '/staff/dashboard'} replace />;
     }
 
-    return children;
+    return <>{children}</>;
 }
 
 function AppRoutes() {
@@ -134,9 +135,11 @@ function AppRoutes() {
 export default function App() {
     return (
         <AuthProvider>
-            <BrowserRouter>
-                <AppRoutes />
-            </BrowserRouter>
+            <AppProvider>
+                <BrowserRouter>
+                    <AppRoutes />
+                </BrowserRouter>
+            </AppProvider>
         </AuthProvider>
     );
 }

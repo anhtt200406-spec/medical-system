@@ -1,14 +1,18 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useApp } from '../../context/AppContext';
 import { Calendar, Clock, User, AlertCircle, ChevronRight } from 'lucide-react';
 import Card, { CardHeader, CardBody } from '../../components/ui/Card';
-import { pendingAppointments } from '../../data/mockData';
 import { formatDate } from '../../utils/helpers';
 
 export default function PatientDashboard() {
     const { user } = useAuth();
-    const [appointments] = useState(pendingAppointments.filter(a => a.patientId === user?.id));
+    const { pendingQueue, completedHistory } = useApp();
+
+    // Lọc lịch hẹn chờ khám của bệnh nhân hiện tại
+    const myAppointments = pendingQueue.filter(a => a.patientId === user?.id);
+    // Lịch sử đã khám
+    const myHistory = completedHistory.filter(a => a.patientId === user?.id);
 
     return (
         <div className="space-y-6">
@@ -44,7 +48,7 @@ export default function PatientDashboard() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-success-100 text-sm mb-1">Lịch hẹn</p>
-                                <p className="text-2xl font-bold">{appointments.length}</p>
+                                <p className="text-2xl font-bold">{myAppointments.length}</p>
                                 <p className="text-xs text-success-100 mt-1">Đang chờ khám</p>
                             </div>
                             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -58,9 +62,9 @@ export default function PatientDashboard() {
                     <CardBody>
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-warning-100 text-sm mb-1">Cảnh báo</p>
-                                <p className="text-2xl font-bold">{user?.allergies?.length || 0}</p>
-                                <p className="text-xs text-warning-100 mt-1">Dị ứng thuốc</p>
+                                <p className="text-warning-100 text-sm mb-1">Lần khám</p>
+                                <p className="text-2xl font-bold">{myHistory.length}</p>
+                                <p className="text-xs text-warning-100 mt-1">Đã thực hiện</p>
                             </div>
                             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
                                 <AlertCircle className="w-6 h-6" />
@@ -84,9 +88,9 @@ export default function PatientDashboard() {
                     </div>
                 </CardHeader>
                 <CardBody>
-                    {appointments.length > 0 ? (
+                    {myAppointments.length > 0 ? (
                         <div className="space-y-3">
-                            {appointments.map((apt) => (
+                            {myAppointments.map((apt) => (
                                 <div
                                     key={apt.id}
                                     className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"

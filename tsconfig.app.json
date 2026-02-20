@@ -6,15 +6,12 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "types": ["vite/client"],
-    "skipLibCheck": true,
-  {
-  "compilerOptions": {
-    "noImplicitAny": false,
-    "skipLibCheck": true,
-    "allowJs": true
-  }
-}
     
+    /* Các tùy chọn nới lỏng thêm vào */
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "allowJs": true,
+    "checkJs": false,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -28,9 +25,6 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
-  },
-  "include": ["src"]
+    "noFallthroughCasesInSwitch": true
+  }
 }

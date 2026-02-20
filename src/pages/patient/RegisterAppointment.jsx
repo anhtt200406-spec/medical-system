@@ -1,39 +1,76 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Calendar } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
+import { Calendar, Clock } from 'lucide-react';
 import Card, { CardHeader, CardBody } from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
 import { specialties, users } from '../../data/mockData';
 
+// Khung giờ khám cố định
+const TIME_SLOTS = [
+    '07:30', '08:00', '08:30', '09:00', '09:30',
+    '10:00', '10:30', '11:00', '11:30',
+    '13:30', '14:00', '14:30', '15:00', '15:30',
+    '16:00', '16:30',
+];
+
 export default function RegisterAppointment() {
     const { user } = useAuth();
+    const { addAppointment } = useApp();
     const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         specialty: '',
         doctor: '',
         date: '',
+        time: '',
     });
     const [success, setSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
 
     const doctors = users.staff;
 
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
 
-        // Auto-select first doctor when specialty changes
+        // Tự động chọn bác sĩ đầu tiên phù hợp khi chọn chuyên khoa
         if (field === 'specialty' && value) {
             const availableDoctors = doctors.filter(d => d.specialty === value);
-            if (availableDoctors.length > 0) {
-                setFormData(prev => ({ ...prev, doctor: availableDoctors[0].id }));
-            }
+            setFormData(prev => ({
+                ...prev,
+                specialty: value,
+                doctor: availableDoctors.length > 0 ? availableDoctors[0].id : '',
+            }));
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setErrorMsg('');
+
+        if (!formData.specialty || !formData.doctor || !formData.date || !formData.time) {
+            setErrorMsg('Vui lòng điền đầy đủ tất cả thông tin.');
+            return;
+        }
+
+        const selectedDoctor = doctors.find(d => d.id === formData.doctor);
+        const selectedSpecialty = specialties.find(s => s.name === formData.specialty);
+
+        addAppointment({
+            patientId: user.id,
+            patientName: user.name,
+            doctorId: formData.doctor,
+            doctorName: selectedDoctor?.name || '',
+            specialty: formData.specialty,
+            specialtyPrice: selectedSpecialty?.price || 200000,
+            date: formData.date,
+            time: formData.time,
+            bhyt: user.bhyt || '',
+        });
+
         setSuccess(true);
         setTimeout(() => {
             navigate('/patient/dashboard');
@@ -43,6 +80,9 @@ export default function RegisterAppointment() {
     const availableDoctors = formData.specialty
         ? doctors.filter(d => d.specialty === formData.specialty)
         : doctors;
+
+    // Ngày tối thiểu = hôm nay
+    const today = new Date().toISOString().split('T')[0];
 
     return (
         <div className="max-w-3xl mx-auto">
@@ -64,7 +104,13 @@ export default function RegisterAppointment() {
                 <CardBody>
                     {success && (
                         <Alert type="success" className="mb-6">
-                            Đăng ký khám thành công! Vui lòng đến đúng giờ hẹn.
+                            ✅ Đăng ký khám thành công! Lịch hẹn đã được ghi nhận. Đang chuyển hướng...
+                        </Alert>
+                    )}
+
+                    {errorMsg && (
+                        <Alert type="danger" className="mb-6">
+                            {errorMsg}
                         </Alert>
                     )}
 
@@ -89,8 +135,8 @@ export default function RegisterAppointment() {
                             </div>
                         </div>
 
-                        {/* Appointment Details */}
-                        <div className="space-y-4">
+                        {/* Chuyên khoa */}
+                        <div className="space-y-2">
                             <h3 className="font-semibold text-slate-900">1. Chọn Chuyên khoa</h3>
                             <select
                                 value={formData.specialty}
@@ -107,12 +153,13 @@ export default function RegisterAppointment() {
                             </select>
                         </div>
 
-                        <div className="space-y-4">
+                        {/* Bác sĩ */}
+                        <div className="space-y-2">
                             <h3 className="font-semibold text-slate-900">2. Chọn Bác sĩ</h3>
                             <select
                                 value={formData.doctor}
                                 onChange={(e) => handleChange('doctor', e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                                 required
                                 disabled={!formData.specialty}
                             >
@@ -123,22 +170,67 @@ export default function RegisterAppointment() {
                                     </option>
                                 ))}
                             </select>
+                            {formData.specialty && availableDoctors.length === 0 && (
+                                <p className="text-sm text-warning-600">
+                                    ⚠️ Hiện chưa có bác sĩ phụ trách chuyên khoa này.
+                                </p>
+                            )}
                         </div>
 
-                        <div className="space-y-4">
+                        {/* Ngày khám */}
+                        <div className="space-y-2">
                             <h3 className="font-semibold text-slate-900">3. Ngày khám</h3>
                             <Input
                                 type="date"
                                 value={formData.date}
                                 onChange={(e) => handleChange('date', e.target.value)}
-                                min={new Date().toISOString().split('T')[0]}
+                                min={today}
                                 required
                             />
                         </div>
 
+                        {/* Giờ khám */}
+                        <div className="space-y-2">
+                            <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-primary-600" />
+                                4. Chọn Giờ khám
+                            </h3>
+                            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                {TIME_SLOTS.map(slot => (
+                                    <button
+                                        key={slot}
+                                        type="button"
+                                        onClick={() => handleChange('time', slot)}
+                                        className={`py-2 px-3 rounded-lg text-sm font-medium border-2 transition-all ${formData.time === slot
+                                            ? 'bg-primary-600 text-white border-primary-600'
+                                            : 'bg-white text-slate-700 border-slate-200 hover:border-primary-400'
+                                            }`}
+                                    >
+                                        {slot}
+                                    </button>
+                                ))}
+                            </div>
+                            {!formData.time && (
+                                <p className="text-xs text-slate-500">Vui lòng chọn một khung giờ.</p>
+                            )}
+                        </div>
+
+                        {/* Preview lịch đã chọn */}
+                        {formData.specialty && formData.date && formData.time && (
+                            <div className="p-4 bg-primary-50 border border-primary-200 rounded-lg text-sm">
+                                <h4 className="font-semibold text-primary-900 mb-2">📋 Thông tin lịch hẹn</h4>
+                                <div className="grid grid-cols-2 gap-2 text-primary-800">
+                                    <span>Chuyên khoa: <strong>{formData.specialty}</strong></span>
+                                    <span>Bác sĩ: <strong>{doctors.find(d => d.id === formData.doctor)?.name || '—'}</strong></span>
+                                    <span>Ngày: <strong>{new Date(formData.date).toLocaleDateString('vi-VN')}</strong></span>
+                                    <span>Giờ: <strong>{formData.time}</strong></span>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="flex gap-3 pt-4">
-                            <Button type="submit" size="lg" className="flex-1">
-                                Xác nhận
+                            <Button type="submit" size="lg" className="flex-1" disabled={success}>
+                                Xác nhận đăng ký
                             </Button>
                             <Button
                                 type="button"

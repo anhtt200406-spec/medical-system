@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useApp } from '../../context/AppContext';
 import { FileText, Pill, Calendar, User } from 'lucide-react';
 import Card, { CardHeader, CardBody } from '../../components/ui/Card';
 import Modal from '../../components/ui/Modal';
-import { appointments } from '../../data/mockData';
 import { formatDate, formatCurrency } from '../../utils/helpers';
 
 export default function MedicalHistory() {
     const { user } = useAuth();
+    const { completedHistory } = useApp();
     const [selectedAppointment, setSelectedAppointment] = useState(null);
-    const [history] = useState(appointments.filter(a => a.patientId === user?.id && a.status === 'completed'));
+
+    // Lọc lịch sử của bệnh nhân hiện tại
+    const history = completedHistory.filter(
+        a => a.patientId === user?.id && (a.status === 'completed')
+    );
 
     return (
         <div className="space-y-6">
@@ -45,7 +50,7 @@ export default function MedicalHistory() {
                                         <div className="flex items-center gap-3 mb-3">
                                             <span className="badge badge-success">Đã khám</span>
                                             <span className="text-sm text-slate-500">
-                                                {formatDate(apt.date)}
+                                                {formatDate(apt.date)} {apt.time && `- ${apt.time}`}
                                             </span>
                                         </div>
 
@@ -72,17 +77,19 @@ export default function MedicalHistory() {
                                                 </p>
                                                 <div className="text-xs text-primary-700 space-y-0.5">
                                                     {apt.prescription.map((drug, idx) => (
-                                                        <div key={idx}>• {drug.medicine} - {drug.quantity} viên</div>
+                                                        <div key={idx}>
+                                                            • {drug.medicine} - {drug.quantity} viên
+                                                        </div>
                                                     ))}
                                                 </div>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="text-right">
-                                        <p className="text-sm text-slate-600">Tổng chi phí</p>
+                                    <div className="text-right ml-4">
+                                        <p className="text-sm text-slate-600">Đã thanh toán</p>
                                         <p className="text-lg font-semibold text-slate-900">
-                                            {formatCurrency(apt.patientPaid)}
+                                            {formatCurrency(apt.patientPaid || apt.patientPays)}
                                         </p>
                                         <p className="text-xs text-success-600">
                                             BHYT hỗ trợ: {formatCurrency(apt.insuranceCovered)}
@@ -139,7 +146,7 @@ export default function MedicalHistory() {
                             <div>
                                 <p className="text-sm text-slate-600">Giờ khám</p>
                                 <p className="font-semibold text-slate-900">
-                                    {selectedAppointment.time}
+                                    {selectedAppointment.time || '—'}
                                 </p>
                             </div>
                         </div>
@@ -156,7 +163,7 @@ export default function MedicalHistory() {
                         </div>
 
                         {/* Prescription */}
-                        {selectedAppointment.prescription && (
+                        {selectedAppointment.prescription && selectedAppointment.prescription.length > 0 && (
                             <div>
                                 <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
                                     <Pill className="w-5 h-5 text-success-600" />
@@ -191,7 +198,9 @@ export default function MedicalHistory() {
                             <div className="p-4 bg-warning-50 border border-warning-200 rounded-lg">
                                 <h4 className="font-semibold text-warning-900 mb-2">Chống chỉ định</h4>
                                 <p className="text-sm text-warning-800">
-                                    {selectedAppointment.contraindications}
+                                    {Array.isArray(selectedAppointment.contraindications)
+                                        ? selectedAppointment.contraindications.join(', ')
+                                        : selectedAppointment.contraindications}
                                 </p>
                             </div>
                         )}
@@ -203,7 +212,7 @@ export default function MedicalHistory() {
                                 <div className="flex justify-between">
                                     <span>Tổng chi phí:</span>
                                     <span className="font-semibold">
-                                        {formatCurrency(selectedAppointment.totalPrice)}
+                                        {formatCurrency(selectedAppointment.totalPrice || selectedAppointment.totalCost)}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-success-300">
@@ -216,7 +225,7 @@ export default function MedicalHistory() {
                                 <div className="flex justify-between text-lg">
                                     <span>Bạn đã thanh toán:</span>
                                     <span className="font-bold">
-                                        {formatCurrency(selectedAppointment.patientPaid)}
+                                        {formatCurrency(selectedAppointment.patientPaid || selectedAppointment.patientPays)}
                                     </span>
                                 </div>
                             </div>

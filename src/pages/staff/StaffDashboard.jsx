@@ -1,15 +1,14 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useApp } from '../../context/AppContext';
 import { Users, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import Card, { CardHeader, CardBody } from '../../components/ui/Card';
-import { pendingAppointments } from '../../data/mockData';
 import { formatDate } from '../../utils/helpers';
 
 export default function StaffDashboard() {
     const { user } = useAuth();
+    const { pendingQueue, examinedToday } = useApp();
     const navigate = useNavigate();
-    const [waitingQueue] = useState(pendingAppointments.filter(a => a.status === 'pending'));
 
     const handleSelectPatient = (appointmentId) => {
         navigate(`/staff/examination/${appointmentId}`);
@@ -32,7 +31,7 @@ export default function StaffDashboard() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-warning-100 text-sm mb-1">Đang chờ</p>
-                                <p className="text-2xl font-bold">{waitingQueue.length}</p>
+                                <p className="text-2xl font-bold">{pendingQueue.length}</p>
                                 <p className="text-xs text-warning-100 mt-1">Bệnh nhân</p>
                             </div>
                             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -47,7 +46,7 @@ export default function StaffDashboard() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-success-100 text-sm mb-1">Đã khám</p>
-                                <p className="text-2xl font-bold">0</p>
+                                <p className="text-2xl font-bold">{examinedToday}</p>
                                 <p className="text-xs text-success-100 mt-1">Hôm nay</p>
                             </div>
                             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -62,7 +61,7 @@ export default function StaffDashboard() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-primary-100 text-sm mb-1">Tổng bệnh nhân</p>
-                                <p className="text-2xl font-bold">{waitingQueue.length}</p>
+                                <p className="text-2xl font-bold">{pendingQueue.length + examinedToday}</p>
                                 <p className="text-xs text-primary-100 mt-1">Hôm nay</p>
                             </div>
                             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -77,14 +76,16 @@ export default function StaffDashboard() {
             <Card>
                 <CardHeader>
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-slate-900">Hàng đợi ({waitingQueue.length})</h2>
+                        <h2 className="text-xl font-semibold text-slate-900">
+                            Hàng đợi ({pendingQueue.length})
+                        </h2>
                         <span className="badge badge-warning">Chờ khám</span>
                     </div>
                 </CardHeader>
                 <CardBody>
-                    {waitingQueue.length > 0 ? (
+                    {pendingQueue.length > 0 ? (
                         <div className="space-y-3">
-                            {waitingQueue.map((apt) => (
+                            {pendingQueue.map((apt) => (
                                 <div
                                     key={apt.id}
                                     className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
