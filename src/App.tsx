@@ -10,6 +10,7 @@ import PatientProfile from './pages/patient/PatientProfile';
 import StaffDashboard from './pages/staff/StaffDashboard';
 import ExaminationPage from './pages/staff/ExaminationPage';
 import PaymentPage from './pages/staff/PaymentPage';
+import StatisticsDashboard from './pages/staff/StatisticsDashboard';
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode; requiredRole?: string }) {
@@ -122,6 +123,15 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute requiredRole="staff">
                         <PaymentPage />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/staff/statistics"
+                element={
+                    <ProtectedRoute requiredRole="staff">
+                        <StatisticsDashboard />
                     </ProtectedRoute>
                 }
             />

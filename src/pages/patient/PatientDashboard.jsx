@@ -18,14 +18,14 @@ export default function PatientDashboard() {
         <div className="space-y-6">
             {/* Welcome Section */}
             <div className="glass p-6 rounded-2xl">
-                <h1 className="text-3xl font-display font-bold text-slate-900 mb-2">
+                <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900 mb-2">
                     Xin chào, {user?.name}
                 </h1>
                 <p className="text-slate-600">Chúc bạn một ngày tốt lành!</p>
             </div>
 
             {/* Quick Stats */}
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Card className="bg-gradient-to-br from-primary-500 to-primary-700 text-white border-none">
                     <CardBody>
                         <div className="flex items-center justify-between">
@@ -93,7 +93,7 @@ export default function PatientDashboard() {
                             {myAppointments.map((apt) => (
                                 <div
                                     key={apt.id}
-                                    className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+                                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors gap-3"
                                 >
                                     <div className="flex items-start gap-4">
                                         <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">

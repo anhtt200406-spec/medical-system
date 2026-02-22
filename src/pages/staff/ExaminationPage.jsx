@@ -176,7 +176,7 @@ export default function ExaminationPage() {
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl font-display font-semibold text-slate-900">
+                            <h1 className="text-xl sm:text-2xl font-display font-semibold text-slate-900">
                                 {patient.name}
                             </h1>
                             <p className="text-sm text-slate-600">Mã BN: {patient.id} • BHYT: {patient.bhyt}</p>
@@ -188,7 +188,7 @@ export default function ExaminationPage() {
                     </div>
                 </CardHeader>
                 <CardBody>
-                    <div className="grid md:grid-cols-4 gap-4 text-sm">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                             <p className="text-slate-600">Ngày sinh</p>
                             <p className="font-semibold text-slate-900">{patient.birthDate}</p>
@@ -223,7 +223,7 @@ export default function ExaminationPage() {
                 </CardBody>
             </Card>
 
-            <div className="grid lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left Column */}
                 <div className="space-y-6">
                     {/* Diagnosis */}

@@ -38,7 +38,7 @@ export default function PaymentPage() {
             <div className="glass p-6 rounded-2xl">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-display font-bold text-slate-900 mb-2">
+                        <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900 mb-2">
                             Quản lý Thanh toán
                         </h1>
                         <p className="text-slate-600">Xử lý thanh toán cho bệnh nhân sau khám</p>
@@ -57,7 +57,7 @@ export default function PaymentPage() {
             )}
 
             {/* Quick Stats */}
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Card className="bg-gradient-to-br from-warning-500 to-warning-700 text-white border-none">
                     <CardBody>
                         <div className="flex items-center justify-between">
@@ -105,7 +105,7 @@ export default function PaymentPage() {
                             {pendingPayments.map((apt) => (
                                 <div
                                     key={apt.id}
-                                    className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer gap-3"
                                     onClick={() => handleSelectPayment(apt)}
                                 >
                                     <div className="flex items-start gap-4 flex-1">
@@ -171,7 +171,7 @@ export default function PaymentPage() {
                             {completedPayments.map((apt) => (
                                 <div
                                     key={apt.id}
-                                    className="flex items-center justify-between p-4 bg-success-50 rounded-lg border border-success-200"
+                                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-success-50 rounded-lg border border-success-200 gap-3"
                                 >
                                     <div className="flex items-start gap-4 flex-1">
                                         <div className="w-12 h-12 bg-gradient-to-br from-success-500 to-success-700 rounded-full flex items-center justify-center text-white">

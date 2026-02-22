@@ -18,14 +18,14 @@ export default function StaffDashboard() {
         <div className="space-y-6">
             {/* Welcome Section */}
             <div className="glass p-6 rounded-2xl">
-                <h1 className="text-3xl font-display font-bold text-slate-900 mb-2">
+                <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900 mb-2">
                     Xin chào, {user?.name}
                 </h1>
                 <p className="text-slate-600">Chuyên khoa: {user?.specialty}</p>
             </div>
 
             {/* Quick Stats */}
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Card className="bg-gradient-to-br from-warning-500 to-warning-700 text-white border-none">
                     <CardBody>
                         <div className="flex items-center justify-between">
@@ -88,7 +88,7 @@ export default function StaffDashboard() {
                             {pendingQueue.map((apt) => (
                                 <div
                                     key={apt.id}
-                                    className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer gap-3"
                                     onClick={() => handleSelectPatient(apt.id)}
                                 >
                                     <div className="flex items-start gap-4 flex-1">

@@ -21,7 +21,7 @@ export const users = {
     staff: [
         {
             id: 'D001',
-            name: 'BS. Nguyễn Văn A',
+            name: 'BS. Trần Thế Anh',
             email: 'doctor@neu.edu.vn',
             password: '123456',
             specialty: 'Khám Tổng quát',
@@ -66,7 +66,7 @@ export const appointments = [
         patientId: 'P001',
         patientName: 'Sinh viên NEU',
         doctorId: 'D001',
-        doctorName: 'BS. Nguyễn Văn A',
+        doctorName: 'BS. Trần Thế Anh',
         specialty: 'Khám Tổng quát',
         date: '2026-02-14',
         time: '09:00',
@@ -107,7 +107,7 @@ export const awaitingPaymentAppointments = [
         patientName: 'Sinh viên NEU',
         bhyt: 'SV12345678',
         doctorId: 'D001',
-        doctorName: 'BS. Nguyễn Văn A',
+        doctorName: 'BS. Trần Thế Anh',
         specialty: 'Khám Tổng quát',
         date: '2026-02-16',
         time: '10:00',
@@ -150,3 +150,22 @@ export const awaitingPaymentAppointments = [
 
 // Insurance coverage percentage
 export const INSURANCE_COVERAGE = 0.80; // 80% coverage
+
+// Monthly statistics data (last 6 months)
+export const monthlyStats = [
+    { month: 'Tháng 9', revenue: 42000000, profit: 18000000, patients: 210 },
+    { month: 'Tháng 10', revenue: 55000000, profit: 23000000, patients: 275 },
+    { month: 'Tháng 11', revenue: 48000000, profit: 19500000, patients: 240 },
+    { month: 'Tháng 12', revenue: 61000000, profit: 27000000, patients: 305 },
+    { month: 'Tháng 1', revenue: 38000000, profit: 15500000, patients: 195 },
+    { month: 'Tháng 2', revenue: 72000000, profit: 31000000, patients: 360 },
+];
+
+// Top medicines sold this month
+export const topMedicines = [
+    { rank: 1, name: 'Paracetamol 500mg', quantity: 1840, revenue: 9200000, unit: 'Viên', trend: 'up' },
+    { rank: 2, name: 'Vitamin C 500mg', quantity: 1520, revenue: 4560000, unit: 'Viên', trend: 'up' },
+    { rank: 3, name: 'Omeprazole 20mg', quantity: 980, revenue: 14700000, unit: 'Viên', trend: 'stable' },
+    { rank: 4, name: 'Cetirizine 10mg', quantity: 760, revenue: 5320000, unit: 'Viên', trend: 'down' },
+    { rank: 5, name: 'Amoxicillin 500mg', quantity: 640, revenue: 7680000, unit: 'Viên', trend: 'up' },
+];
