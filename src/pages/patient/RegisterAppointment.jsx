@@ -2,14 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, CheckCircle } from 'lucide-react';
 import Card, { CardHeader, CardBody } from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
 import { specialties, users } from '../../data/mockData';
 
-// Khung giờ khám cố định
 const TIME_SLOTS = [
     '07:30', '08:00', '08:30', '09:00', '09:30',
     '10:00', '10:30', '11:00', '11:30',
@@ -22,12 +21,7 @@ export default function RegisterAppointment() {
     const { addAppointment } = useApp();
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
-        specialty: '',
-        doctor: '',
-        date: '',
-        time: '',
-    });
+    const [formData, setFormData] = useState({ specialty: '', doctor: '', date: '', time: '' });
     const [success, setSuccess] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
@@ -35,13 +29,10 @@ export default function RegisterAppointment() {
 
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-
-        // Tự động chọn bác sĩ đầu tiên phù hợp khi chọn chuyên khoa
         if (field === 'specialty' && value) {
             const availableDoctors = doctors.filter(d => d.specialty === value);
             setFormData(prev => ({
-                ...prev,
-                specialty: value,
+                ...prev, specialty: value,
                 doctor: availableDoctors.length > 0 ? availableDoctors[0].id : '',
             }));
         }
@@ -50,98 +41,77 @@ export default function RegisterAppointment() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setErrorMsg('');
-
         if (!formData.specialty || !formData.doctor || !formData.date || !formData.time) {
             setErrorMsg('Vui lòng điền đầy đủ tất cả thông tin.');
             return;
         }
-
         const selectedDoctor = doctors.find(d => d.id === formData.doctor);
         const selectedSpecialty = specialties.find(s => s.name === formData.specialty);
-
         addAppointment({
-            patientId: user.id,
-            patientName: user.name,
-            doctorId: formData.doctor,
-            doctorName: selectedDoctor?.name || '',
-            specialty: formData.specialty,
-            specialtyPrice: selectedSpecialty?.price || 200000,
-            date: formData.date,
-            time: formData.time,
-            bhyt: user.bhyt || '',
+            patientId: user.id, patientName: user.name,
+            doctorId: formData.doctor, doctorName: selectedDoctor?.name || '',
+            specialty: formData.specialty, specialtyPrice: selectedSpecialty?.price || 200000,
+            date: formData.date, time: formData.time, bhyt: user.bhyt || '',
         });
-
         setSuccess(true);
-        setTimeout(() => {
-            navigate('/patient/dashboard');
-        }, 2000);
+        setTimeout(() => navigate('/patient/dashboard'), 2000);
     };
 
     const availableDoctors = formData.specialty
         ? doctors.filter(d => d.specialty === formData.specialty)
         : doctors;
 
-    // Ngày tối thiểu = hôm nay
     const today = new Date().toISOString().split('T')[0];
+    const textSub = 'rgba(226,232,240,0.65)';
 
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto animate-fade-in">
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
-                            <Calendar className="w-6 h-6 text-primary-600" />
+                        <div className="w-11 h-11 rounded-xl flex items-center justify-center"
+                            style={{ background: 'rgba(14,165,233,0.15)', border: '1px solid rgba(56,189,248,0.25)' }}>
+                            <Calendar className="w-6 h-6 text-sky-400" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-display font-semibold text-slate-900">
-                                Đăng ký khám bệnh
-                            </h1>
-                            <p className="text-sm text-slate-600">Vui lòng điền đầy đủ thông tin</p>
+                            <h1 className="text-xl font-bold text-white">Đăng ký khám bệnh</h1>
+                            <p className="text-sm" style={{ color: textSub }}>Vui lòng điền đầy đủ thông tin</p>
                         </div>
                     </div>
                 </CardHeader>
 
                 <CardBody>
-                    {success && (
-                        <Alert type="success" className="mb-6">
-                            ✅ Đăng ký khám thành công! Lịch hẹn đã được ghi nhận. Đang chuyển hướng...
-                        </Alert>
-                    )}
-
-                    {errorMsg && (
-                        <Alert type="danger" className="mb-6">
-                            {errorMsg}
-                        </Alert>
-                    )}
+                    {success && <Alert type="success" className="mb-6">✅ Đăng ký khám thành công! Lịch hẹn đã được ghi nhận. Đang chuyển hướng...</Alert>}
+                    {errorMsg && <Alert type="danger" className="mb-6">{errorMsg}</Alert>}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Patient Info (Read-only) */}
-                        <div className="grid md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg">
-                            <div>
-                                <p className="text-sm text-slate-600">Họ và tên</p>
-                                <p className="font-semibold text-slate-900">{user?.name}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-slate-600">Mã BHYT</p>
-                                <p className="font-semibold text-slate-900">{user?.bhyt}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-slate-600">Số điện thoại</p>
-                                <p className="font-semibold text-slate-900">{user?.phone}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-slate-600">Ngày sinh</p>
-                                <p className="font-semibold text-slate-900">{user?.birthDate}</p>
-                            </div>
+                        {/* Patient Info Read-only */}
+                        <div className="grid md:grid-cols-2 gap-4 p-4 rounded-xl"
+                            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                            {[
+                                { label: 'Họ và tên', value: user?.name },
+                                { label: 'Mã BHYT', value: user?.bhyt },
+                                { label: 'Số điện thoại', value: user?.phone },
+                                { label: 'Ngày sinh', value: user?.birthDate },
+                            ].map(({ label, value }) => (
+                                <div key={label}>
+                                    <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'rgba(226,232,240,0.4)' }}>{label}</p>
+                                    <p className="font-semibold text-white">{value}</p>
+                                </div>
+                            ))}
                         </div>
 
                         {/* Chuyên khoa */}
                         <div className="space-y-2">
-                            <h3 className="font-semibold text-slate-900">1. Chọn Chuyên khoa</h3>
+                            <h3 className="font-semibold text-white flex items-center gap-2">
+                                <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                                    style={{ background: 'rgba(14,165,233,0.2)', border: '1px solid rgba(56,189,248,0.3)', color: '#38bdf8' }}>1</span>
+                                Chọn Chuyên khoa
+                            </h3>
                             <select
                                 value={formData.specialty}
                                 onChange={(e) => handleChange('specialty', e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                className="dark-select"
                                 required
                             >
                                 <option value="">-- Chọn chuyên khoa --</option>
@@ -155,31 +125,35 @@ export default function RegisterAppointment() {
 
                         {/* Bác sĩ */}
                         <div className="space-y-2">
-                            <h3 className="font-semibold text-slate-900">2. Chọn Bác sĩ</h3>
+                            <h3 className="font-semibold text-white flex items-center gap-2">
+                                <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                                    style={{ background: 'rgba(14,165,233,0.2)', border: '1px solid rgba(56,189,248,0.3)', color: '#38bdf8' }}>2</span>
+                                Chọn Bác sĩ
+                            </h3>
                             <select
                                 value={formData.doctor}
                                 onChange={(e) => handleChange('doctor', e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="dark-select"
                                 required
                                 disabled={!formData.specialty}
                             >
                                 <option value="">-- Chọn bác sĩ --</option>
                                 {availableDoctors.map(doctor => (
-                                    <option key={doctor.id} value={doctor.id}>
-                                        {doctor.name}
-                                    </option>
+                                    <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
                                 ))}
                             </select>
                             {formData.specialty && availableDoctors.length === 0 && (
-                                <p className="text-sm text-warning-600">
-                                    ⚠️ Hiện chưa có bác sĩ phụ trách chuyên khoa này.
-                                </p>
+                                <p className="text-sm text-amber-400">⚠️ Hiện chưa có bác sĩ phụ trách chuyên khoa này.</p>
                             )}
                         </div>
 
                         {/* Ngày khám */}
                         <div className="space-y-2">
-                            <h3 className="font-semibold text-slate-900">3. Ngày khám</h3>
+                            <h3 className="font-semibold text-white flex items-center gap-2">
+                                <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                                    style={{ background: 'rgba(14,165,233,0.2)', border: '1px solid rgba(56,189,248,0.3)', color: '#38bdf8' }}>3</span>
+                                Ngày khám
+                            </h3>
                             <Input
                                 type="date"
                                 value={formData.date}
@@ -190,10 +164,12 @@ export default function RegisterAppointment() {
                         </div>
 
                         {/* Giờ khám */}
-                        <div className="space-y-2">
-                            <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-primary-600" />
-                                4. Chọn Giờ khám
+                        <div className="space-y-3">
+                            <h3 className="font-semibold text-white flex items-center gap-2">
+                                <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                                    style={{ background: 'rgba(14,165,233,0.2)', border: '1px solid rgba(56,189,248,0.3)', color: '#38bdf8' }}>4</span>
+                                <Clock className="w-4 h-4 text-sky-400" />
+                                Chọn Giờ khám
                             </h3>
                             <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                                 {TIME_SLOTS.map(slot => (
@@ -201,34 +177,41 @@ export default function RegisterAppointment() {
                                         key={slot}
                                         type="button"
                                         onClick={() => handleChange('time', slot)}
-                                        className={`py-2 px-3 rounded-lg text-sm font-medium border-2 transition-all ${formData.time === slot
-                                            ? 'bg-primary-600 text-white border-primary-600'
-                                            : 'bg-white text-slate-700 border-slate-200 hover:border-primary-400'
-                                            }`}
+                                        className={`time-slot ${formData.time === slot ? 'active' : ''}`}
                                     >
                                         {slot}
                                     </button>
                                 ))}
                             </div>
                             {!formData.time && (
-                                <p className="text-xs text-slate-500">Vui lòng chọn một khung giờ.</p>
+                                <p className="text-xs" style={{ color: 'rgba(226,232,240,0.4)' }}>Vui lòng chọn một khung giờ.</p>
                             )}
                         </div>
 
-                        {/* Preview lịch đã chọn */}
+                        {/* Preview */}
                         {formData.specialty && formData.date && formData.time && (
-                            <div className="p-4 bg-primary-50 border border-primary-200 rounded-lg text-sm">
-                                <h4 className="font-semibold text-primary-900 mb-2">📋 Thông tin lịch hẹn</h4>
-                                <div className="grid grid-cols-2 gap-2 text-primary-800">
-                                    <span>Chuyên khoa: <strong>{formData.specialty}</strong></span>
-                                    <span>Bác sĩ: <strong>{doctors.find(d => d.id === formData.doctor)?.name || '—'}</strong></span>
-                                    <span>Ngày: <strong>{new Date(formData.date).toLocaleDateString('vi-VN')}</strong></span>
-                                    <span>Giờ: <strong>{formData.time}</strong></span>
+                            <div className="p-4 rounded-xl"
+                                style={{ background: 'rgba(14,165,233,0.08)', border: '1px solid rgba(56,189,248,0.2)' }}>
+                                <h4 className="font-semibold text-sky-300 mb-3 flex items-center gap-2">
+                                    <CheckCircle className="w-4 h-4" /> Thông tin lịch hẹn
+                                </h4>
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                    {[
+                                        { label: 'Chuyên khoa', value: formData.specialty },
+                                        { label: 'Bác sĩ', value: doctors.find(d => d.id === formData.doctor)?.name || '—' },
+                                        { label: 'Ngày', value: new Date(formData.date).toLocaleDateString('vi-VN') },
+                                        { label: 'Giờ', value: formData.time },
+                                    ].map(({ label, value }) => (
+                                        <div key={label}>
+                                            <span style={{ color: textSub }}>{label}: </span>
+                                            <span className="font-semibold text-white">{value}</span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
 
-                        <div className="flex gap-3 pt-4">
+                        <div className="flex gap-3 pt-2">
                             <Button type="submit" size="lg" className="flex-1" disabled={success}>
                                 Xác nhận đăng ký
                             </Button>

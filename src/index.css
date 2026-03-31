@@ -4,81 +4,288 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── CSS Variables (Dark Medical Theme) ─── */
+:root {
+  --bg-base:        #080f1e;
+  --bg-surface:     #0f172a;
+  --bg-card:        rgba(15, 23, 42, 0.85);
+  --bg-card-hover:  rgba(15, 23, 42, 0.97);
+  --border:         rgba(56, 189, 248, 0.12);
+  --border-hover:   rgba(56, 189, 248, 0.28);
+  --text-primary:   #e2e8f0;
+  --text-secondary: rgba(226, 232, 240, 0.55);
+  --text-muted:     rgba(226, 232, 240, 0.30);
+  --accent-sky:     #38bdf8;
+  --accent-teal:    #14b8a6;
+  --accent-violet:  #818cf8;
+  --accent-amber:   #fbbf24;
+  --glow-sky:       rgba(56, 189, 248, 0.18);
+}
+
 @layer base {
   body {
-    @apply bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 font-sans text-slate-900 antialiased;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
     margin: 0;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-display font-semibold;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    color: var(--text-primary);
   }
 }
 
-@layer components {
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar          { width: 6px; height: 6px; }
+::-webkit-scrollbar-track    { background: rgba(15, 23, 42, 0.4); }
+::-webkit-scrollbar-thumb    { background: rgba(56, 189, 248, 0.35); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.6); }
 
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-slate-100 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-primary-400 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary-600;
-  }
-
-  /* Glassmorphism Effect */
-  .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-soft;
-  }
-
-  .glass-dark {
-    @apply bg-slate-900/70 backdrop-blur-xl border border-slate-700/20 shadow-soft;
-  }
-
-  /* Medical Badge */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
-
-  .badge-success {
-    @apply bg-success-100 text-success-800;
-  }
-
-  .badge-warning {
-    @apply bg-warning-100 text-warning-800;
-  }
-
-  .badge-danger {
-    @apply bg-danger-100 text-danger-800;
-  }
-
-  .badge-info {
-    @apply bg-primary-100 text-primary-800;
-  }
-
-  /* Card Hover Effect */
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-medium hover:-translate-y-1;
-  }
+/* ─── DARK GLASS CARDS ─── */
+.glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
 }
 
+.glass-dark {
+  background: rgba(5, 10, 20, 0.92);
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  backdrop-filter: blur(24px);
+}
+
+/* ─── PAGE WRAPPER ─── */
+.page-bg {
+  background: linear-gradient(160deg, #080f1e 0%, #0a1628 40%, #080f1e 100%);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ─── STAT CARD COLORS ─── */
+.stat-sky    { background: linear-gradient(135deg, #0ea5e9, #0284c7); box-shadow: 0 8px 24px rgba(14,165,233,0.3); }
+.stat-teal   { background: linear-gradient(135deg, #14b8a6, #0d9488); box-shadow: 0 8px 24px rgba(20,184,166,0.3); }
+.stat-violet { background: linear-gradient(135deg, #818cf8, #6d28d9); box-shadow: 0 8px 24px rgba(129,140,248,0.3); }
+.stat-amber  { background: linear-gradient(135deg, #fbbf24, #d97706); box-shadow: 0 8px 24px rgba(251,191,36,0.3); }
+.stat-rose   { background: linear-gradient(135deg, #f43f5e, #be123c); box-shadow: 0 8px 24px rgba(244,63,94,0.3); }
+.stat-emerald{ background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 24px rgba(16,185,129,0.3); }
+
+/* ─── DARK CARD (replaces white cards) ─── */
+.dark-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.dark-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.08);
+}
+.dark-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 18px rgba(56,189,248,0.1);
+}
+
+/* ─── DARK TABLE ROW ─── */
+.dark-row {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.dark-row:hover {
+  background: rgba(14, 165, 233, 0.07);
+  border-color: rgba(56, 189, 248, 0.18);
+}
+
+/* ─── BADGE ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.badge-success  { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+.badge-warning  { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+.badge-danger   { background: rgba(244,63,94,0.12);  color: #fb7185; border: 1px solid rgba(244,63,94,0.25); }
+.badge-info     { background: rgba(56,189,248,0.12); color: #38bdf8; border: 1px solid rgba(56,189,248,0.25); }
+
+/* ─── GLOW BUTTON ─── */
+.glow-btn {
+  background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+  box-shadow: 0 0 18px rgba(14, 165, 233, 0.35);
+  color: white;
+  font-weight: 600;
+  border: none;
+  transition: all 0.25s ease;
+}
+.glow-btn:hover {
+  box-shadow: 0 0 28px rgba(14, 165, 233, 0.55);
+  transform: translateY(-1px);
+}
+.glow-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ─── DARK INPUT ─── */
+.dark-input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 0.9rem;
+}
+.dark-input::placeholder { color: rgba(226, 232, 240, 0.25); }
+.dark-input:focus {
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+}
+.dark-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ─── DARK SELECT ─── */
+.dark-select {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+}
+.dark-select:focus { border-color: rgba(56, 189, 248, 0.5); }
+.dark-select:disabled { opacity: 0.55; cursor: not-allowed; }
+.dark-select option { background: #0f172a; color: #e2e8f0; }
+
+/* ─── SECTION HEADER ─── */
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  color: var(--accent-sky);
+  margin-bottom: 0.75rem;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in      { animation: fade-in-up 0.5s 0s    cubic-bezier(.22,1,.36,1) both; }
+.animate-fade-in-1    { animation: fade-in-up 0.5s 0.08s cubic-bezier(.22,1,.36,1) both; }
+.animate-fade-in-2    { animation: fade-in-up 0.5s 0.16s cubic-bezier(.22,1,.36,1) both; }
+.animate-fade-in-3    { animation: fade-in-up 0.5s 0.24s cubic-bezier(.22,1,.36,1) both; }
+.animate-fade-in-4    { animation: fade-in-up 0.5s 0.32s cubic-bezier(.22,1,.36,1) both; }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(14,165,233,0.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(14,165,233,0); }
+}
+.pulse-glow { animation: pulse-glow 2.5s infinite; }
+
+@keyframes shimmer-text {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shimmer-text {
+  background: linear-gradient(90deg, #38bdf8, #14b8a6, #818cf8, #38bdf8);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-text 4s linear infinite;
+}
+
+/* ─── TIME SLOT BUTTON ─── */
+.time-slot {
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  background: rgba(15,23,42,0.6);
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.time-slot:hover {
+  border-color: var(--accent-sky);
+  color: var(--accent-sky);
+  background: rgba(56,189,248,0.08);
+}
+.time-slot.active {
+  background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 14px rgba(14,165,233,0.4);
+}
+
+/* ─── INFO GRID (read-only patient info etc.) ─── */
+.info-grid {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+}
+.info-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+.info-value { font-weight: 600; color: var(--text-primary); }
+
+/* ─── CARD HOVER ─── */
+.card-hover {
+  transition: all 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 20px rgba(56,189,248,0.09);
+}
+
+/* ─── DIVIDER ─── */
+.dark-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 1rem 0;
+}
+
+/* ─── ALERT OVERRIDES ─── */
+.alert-success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #34d399; border-radius: 10px; padding: 0.75rem 1rem; }
+.alert-warning { background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.25); color: #fcd34d; border-radius: 10px; padding: 0.75rem 1rem; }
+.alert-danger  { background: rgba(244,63,94,0.1);  border: 1px solid rgba(244,63,94,0.25);  color: #fb7185; border-radius: 10px; padding: 0.75rem 1rem; }
+.alert-info    { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.25); color: #38bdf8; border-radius: 10px; padding: 0.75rem 1rem; }
+
+/* ─── Ensure tailwind utilities still work ─── */
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+  .text-balance { text-wrap: balance; }
 }
